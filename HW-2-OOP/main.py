@@ -114,7 +114,7 @@ class Profile:
     #     self.__dict__.update(**kwargs)
 
     def __str__(self) -> str:
-        return f"{list(self.__dict__.values())}"
+        return list(self.__dict__.values())
     
 
 a = Profile('Yura',
