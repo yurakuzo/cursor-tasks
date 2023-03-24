@@ -108,7 +108,6 @@ class Profile:
         self.birthday = birthday
         self.age = age
         self.sex = sex
-        self.__dict__.update()
 
     # or
     # def __init__(self, **kwargs):
