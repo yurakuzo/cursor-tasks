@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from datetime import datetime, timedelta
 
-from utils import validate_timezone, get_docstring
+from utils.utils import validate_timezone, get_docstring
 
 app = Flask(__name__)
 
@@ -38,6 +38,7 @@ def get_datetime():
 def get_datetime_with_timezone_offset(timezone_offset='server_local'):
     if timezone_offset == 'server_local':
         return f"Time at server time zone is: {datetime.utcnow()}"
+    
     app.logger.info(f'You are on GMT({timezone_offset}) time zone')
 
     timezone_offset_int = int(timezone_offset)
