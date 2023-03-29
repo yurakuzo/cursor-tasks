@@ -29,7 +29,7 @@ def get_datetime():
     
     return get_docstring(get_datetime)
 
-    # server_datetime = datetime.utcnow()
+    # server_datetime = datetime.now()
     # return jsonify({'datetime': server_datetime})
 
 
@@ -37,7 +37,7 @@ def get_datetime():
 @app.route('/datetime/<string:timezone_offset>')
 def get_datetime_with_timezone_offset(timezone_offset='server_local'):
     if timezone_offset == 'server_local':
-        return f"Time at server time zone is: {datetime.utcnow()}"
+        return f"Time at server time zone is: {datetime.now()}"
     
     app.logger.info(f'You are on GMT({timezone_offset}) time zone')
 
