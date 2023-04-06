@@ -2,21 +2,35 @@ from functools import lru_cache
 from flask import Flask, abort, request, Response
 
 from statapi import methods
+from statapi.methods import formatters
+
+from utils import get_docstring, to_bool
 
 app = Flask(__name__)
 
 
 @app.route('/stats/')
-@lru_cache(maxsize=1)  # can use cuz no flask proxies refered
 def stats_root():
-    """List all methods."""
     ret = {'methods': list(methods)}
-    return ret  # auto-converted to json by flask
+
+    format = request.args.get('format')
+    
+    if format:
+        doc_format = methods.formatters.get('format')[1]
+        return doc_format(ret)
+
+    ret['response'] = [f"<h2>#{i} | {obj}</h2>  <p>{get_docstring(obj)}</p>" for i, obj in enumerate(ret['methods'], start=1)]
+    return Response(ret['response'])
 
 
 @app.route('/stats/<string:method>')
 def stats(method):
     format = request.args.get('format')
+    if format not in formatters:
+        abort(415, f"Invalid format parameter\nPossible format types are: {', '.join(formatters)}")
+
+    kwargs = request.args.to_dict()
+    kwargs = to_bool(**kwargs)
 
     try:
         func = methods[method]
@@ -24,13 +38,11 @@ def stats(method):
         abort(404, f'Method {method} not found')
 
     try:
-        # format is set on a statapi module level defaults
-        res, mime = func() if format is None else func(format=format)
-    except Exception as exc:
-        abort(400)
+        res, mime = func(**kwargs)
+    except ValueError as exc:
+        abort(404, exc)
 
-    # TODO: add error reporting verbosity
-    #       e.g. when format is not supported
+    
 
     return Response(res, mimetype=mime)
 
