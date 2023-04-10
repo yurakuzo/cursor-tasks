@@ -64,8 +64,7 @@ methods = dict.fromkeys([
     'boot_time', 'cpu_count', 'cpu_freq', 'cpu_percent', 'cpu_stats',
     'cpu_times', 'cpu_times_percent', 'disk_io_counters', 'disk_partitions',
     'getloadavg', 'net_if_stats', 'net_io_counters', 'sensors_battery',
-    'sensors_fans', 'sensors_temperatures', 'swap_memory', 'virtual_memory',
-    'wait_procs'
+    'swap_memory', 'virtual_memory', 'wait_procs'
 ])
 # get original methods by name
 methods = {name: getattr(ps, name) for name in methods}

@@ -21,7 +21,8 @@ app.register_blueprint(assets, url_prefix='/')
 def memory():
     mem = methods['virtual_memory'](format=None)
     app.logger.debug('Got memory data:\n\t %r', mem)
-    return render_template('memory.html.jinja',
+    
+    return render_template('memory.html',
                            pagetitle='Memory statistics',
                            statname='memory',
                            mem=mem
@@ -41,6 +42,12 @@ def memory_client():
     # add logic here
     ...
     return render_template('memory-client.html')
+
+
+@app.route('/memory-dynamic')
+def memory_dynamic():
+    mem = methods['virtual_memory'](format=None)
+    return render_template('memory-dynamic.html', mem=mem)
 
 
 
