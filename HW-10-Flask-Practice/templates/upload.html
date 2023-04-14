@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Upload your own picture</h1>
+
+    <form method="POST" class="form" action="/cats/upload" enctype="multipart/form-data">
+        <label for="image">Add your image:</label>
+        <input type="file" id="image" name="image"><br>
+  
+        <input type="submit" value="Submit">
+      </form>
+{% endblock %}

@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 # Default font the cutter uses
 # see `fc-list | grep .ttf`
-DEFAULT_FONT = 'LiberationSans-Bold.ttf'
+DEFAULT_FONT = 'arial.ttf'
 log.info('Using font %s as default', DEFAULT_FONT)
 
 class TextCut:

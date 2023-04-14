@@ -1,4 +1,5 @@
 import logging
+from os import listdir
 # Setup logging ASAP, as we want all
 # messages to appear in log when this file is
 # used as the project root (i.e. without Flask)
@@ -10,33 +11,34 @@ from utils import DateTriple, cutter
 import pathlib as pth
 import random
 
-# Directory containing cat images,
+# Directory containing uploaded images,
 # relative to project directory
-CATDIR = './cats'
+UPLOADDIR = './uploaded'
+_PROJDIR = pth.Path(__file__).parent
+
+UPLOADDIR_PATH = _PROJDIR.joinpath('uploaded')
 
 # The logger we use
 log = logging.getLogger(__name__)
-
-_PROJDIR = pth.Path(__file__).parent
 log.debug('Project directory is "%s"', _PROJDIR.resolve())
 
-def _get_cats(catdir=CATDIR):
+def _get_uploaded_images(uploaddir=UPLOADDIR):
     # Ensure all directories reside under project directory
     # and are resolved relative to it
 
-    catdir = _PROJDIR.joinpath(pth.Path(catdir))
-    assert catdir.is_relative_to(_PROJDIR)
-    cats = tuple(catdir.iterdir())
-    return cats
+    uploaddir = _PROJDIR.joinpath(pth.Path(uploaddir))
+    assert uploaddir.is_relative_to(_PROJDIR)
+    images = tuple(uploaddir.iterdir())
+    return images
 
-# collect all cat images under supplied directory
-CATS = _get_cats(CATDIR)
+# collect all uploaded images under supplied directory
+UPLOADED_IMAGES = _get_uploaded_images(UPLOADDIR)
 
 # Put some info into log
-log.info('Cats directory set to: %s', CATDIR)
+log.info('Uploaded directory set to: %s', UPLOADDIR)
 if log.isEnabledFor(logging.INFO):
-    log.info('Collected %s cat images:\n\t%s',
-              len(CATS), '\n\t'.join(CATS))
+    log.info('Collected %s uploaded images:\n\t%s',
+              len(UPLOADED_IMAGES), '\n\t'.join(str(img) for img in UPLOADED_IMAGES))
 
 
 def find_cat_file(numext, try_random=False):
@@ -46,11 +48,18 @@ def find_cat_file(numext, try_random=False):
     # num specifies the cat image to use
     # if num is omitted, and try_random is True, random cat should appear
     if try_random is True and not base:
-        num = random.randint(0, len(CATS) - 1)
+        num = random.randint(0, len(UPLOADED_IMAGES) - 1)
     else:
         num = int(base)      # try integer conversion
     
-    if num < 0 or num > len(CATS) - 1:
+    if num < 0 or num > len(UPLOADED_IMAGES) - 1:
         raise ValueError
     
-    return CATS[num], base, ext
+    return UPLOADED_IMAGES[num], base, ext
+
+def image_exists(name):
+    return name in listdir(UPLOADDIR_PATH)
+
+def update_UPLOADED():
+    global UPLOADED_IMAGES
+    CATS = _get_uploaded_images(UPLOADDIR)

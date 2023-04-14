@@ -1,9 +1,13 @@
-import catday
+import os
+from imagedir import catday, uploaded
+from utils.textcut import cutter
 import utils
+
 from flask import Flask, Response, abort, send_file
+from flask import render_template, request, redirect
+
 import PIL.Image
 import logging
-
 
 from time import perf_counter
 
@@ -11,12 +15,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    # TODO: use proper template instead of the following
-    ret = r'Try <a href="/cats/catoftheday.jpg">Cat of the Day</a>'
-    ret += r'<br><img src="/cats/catoftheday.jpg" alt="catoftheday"'
-    ret += r' style="max-height: 90vh; margin: auto; display: flex"></img>'
-    return Response(ret, mimetype='text/html')
-
+    return render_template('index.html',
+                            title='Hello World!', 
+                          )
 
 # Note:
 #   If a rule ends with a slash and is requested without a slash by the user,
@@ -29,13 +30,13 @@ def hello_world():
 @app.route('/cats/')
 def list_cats():
     msg = 'There are {num} cats in our collection'
-    return msg.format(num=len(catday.CATS))
+    return msg.format(num=len(catday.IMAGES))
 
 
 def get_cat(numext, try_random=False):
     try:
-        ret = catday.find_cat_file(numext=numext,
-                                   try_random=try_random)
+        ret = catday.find_img_file(numext=numext,
+                                         try_random=try_random)
     except ValueError:      # integer unconvertable or wrong range
         abort(404, 'Wrong image number')
     else:
@@ -81,18 +82,18 @@ def cat_original(num, ext):
 
 
 @app.route('/cats/catoftheday<name>')
-def cat_modified(name):
+def cat_modified(name, text=''):
     file, base, ext = get_cat(name, try_random=True)
 
     date = utils.DateTriple()       # try UADateTriple() here
     date_suffix = date.tostr(fmt='{day}_{month:.3}').lower()
 
-    text = date.tostr(fmt='{weekday:.3},\n{day}\n{month:.3}')
+    text = text if text else date.tostr(fmt='{weekday:.3},\n{day}\n{month:.3}')
 
     try:
         img = PIL.Image.open(file)
         bgcolor = (255, 255, 255, int(255 * 0.4))
-        cut = catday.cutter.text_cutout(img, text, bgcolor=bgcolor)
+        cut = cutter.text_cutout(img, text, bgcolor=bgcolor)
         if ext in ['.jpg', '.jpeg', '.jfif']:
             # eliminate alpha-channel as JPEG has no alpha
             cut = cut.convert('RGB')
@@ -104,7 +105,59 @@ def cat_modified(name):
     name = f'catoftheday{base}-{date_suffix}{ext}'
     return send_file(file, as_attachment=False, download_name=name)
 
-    
+
+
+@app.route('/cats/custom', methods=['GET', 'POST'])
+def custom():
+    if request.method == 'GET':
+        return render_template('custom_cat.html',
+                            title='Custom Image'
+                            )
+    if request.method == 'POST':
+        file = request.files.get('image')
+        filename, ext = file.filename.split('.')
+        ext = f'.{ext}'
+
+        text = request.form.get('text')
+
+        try:
+            img = PIL.Image.open(file)
+            bgcolor = (255, 255, 255, int(255 * 0.4))
+            cut = cutter.text_cutout(img, text, bgcolor=bgcolor)
+            if ext in ['.jpg', '.jpeg', '.jfif']:
+                # eliminate alpha-channel as JPEG has no alpha
+                cut = cut.convert('RGB')
+            file = utils.ImageIO(cut, ext=ext)
+        except utils.ImageIOError as err:
+            abort(400, str(err))
+
+        # passed to browser
+        name = f'custom_cat_{filename}-{text}{ext}'
+        return send_file(file, as_attachment=False, download_name=name)
+
+@app.route('/cats/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'GET':
+        return render_template('upload.html',
+                                title='Upload own picture'
+                              )
+    if request.method == 'POST':
+        file = request.files.get('image')
+        filename, ext = file.filename.split('.')
+        ext = f'.{ext}'
+        print(f"file: {file}\nfilename: {filename}\next: {ext}\n")
+        
+        if ext in ('.jpg', '.jpeg', '.jfif', '.png'):
+            filename = utils.hash.get_hash(file) + ext
+            if not uploaded.image_exists(filename):
+                path_file = os.path.join(uploaded.DIR_PATH, filename)
+                file.save(path_file)
+                uploaded.update_IMAGES()
+                return Response('Your image has been successfully uploaded', 200)
+            else:
+                return Response('Your image has been already uploaded before', 409)
+        else:
+            return Response('Invalid file format', 422)
 
 
 if __name__ == '__main__':

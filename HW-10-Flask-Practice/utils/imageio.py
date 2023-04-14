@@ -8,6 +8,11 @@ EXTENSIONS = PIL.Image.registered_extensions()
 # Build the inverse for lookups, containing {FORMAT: EXT}
 FORMATS = {v: k for k, v in EXTENSIONS.items()}
 
+# max num of pixels allowed
+MAX_PIXELS = 3_500_000
+
+# max size allowed
+MAX_SIZE = 10 * 1024 * 1024  # 10 MB
 
 class ImageIOError(Exception):
     pass
@@ -43,6 +48,24 @@ class ImageIO(io.BytesIO):
             format = EXTENSIONS[ext]
         except KeyError:
             err = ImageIOError(f'Unsupported image extension "{ext}"')
+            raise err from None
+
+        # check file extension
+        if not ext in ['.jpg', '.jpeg', '.jfif', '.png']:
+            err = ImageIOError(f'Unsupported image extension "{ext}"')
+            raise err from None
+
+        # check file size
+        if self.getbuffer().nbytes > MAX_SIZE:
+            err = ImageIOError(f'File size exceeds maximum allowed ({MAX_SIZE} bytes)')
+            raise err from None
+
+        # check image dimensions
+        img_size = img.size[0] * img.size[1]
+        
+        if img_size > MAX_PIXELS:
+            print(f'{img_size} > {MAX_PIXELS}')
+            err = ImageIOError(f'Image size exceeds maximum allowed ({MAX_PIXELS} pixels)')
             raise err from None
 
         img.save(self, format=format)

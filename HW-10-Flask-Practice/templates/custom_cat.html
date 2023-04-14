@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Custom Cat</h1>
+
+    <form method="POST" class="form" action="/cats/custom" enctype="multipart/form-data">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image"><br>
+  
+        <label for="text">Text:</label>
+        <textarea id="text" name="text" rows="4" cols="50"></textarea><br>
+  
+        <input type="submit" value="Submit">
+      </form>
+    
+    <h3>Your picture will look like this:</h3>
+    <img src="/cats/catoftheday.jpg" 
+        alt="catoftheday" 
+        style="max-height: 90vh; 
+                margin: auto; 
+                display: flex"></img>
+{% endblock %}
