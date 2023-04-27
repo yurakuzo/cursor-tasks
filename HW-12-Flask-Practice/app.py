@@ -27,11 +27,7 @@ catday.cats_bp.logger = app.logger
 
 @app.route('/')
 def hello_world():
-    # TODO: use proper template instead of the following
-    ret = r'Try <a href="/cats/catoftheday.jpg">Cat of the Day</a>'
-    ret += r'<br><img src="/cats/catoftheday.jpg" alt="catoftheday"'
-    ret += r' style="max-height: 90vh; margin: auto; display: flex"></img>'
-    return Response(ret, mimetype='text/html')
+    return render_template('index.html', title='Homepage')
 
 # (!) IMPORTANT (!):
 # Below is minimal example. Uploads (as well as any other user input)
@@ -51,9 +47,7 @@ def upload():
         else:
             msg = f'Saved as {dbfile.name} with id {dbfile.id}'
 
-    return render_template('upload.html', status=msg)
-
-        
+    return render_template('upload.html', title='Upload page', status=msg)
 
 
 
