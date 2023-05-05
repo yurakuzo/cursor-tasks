@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="/save-post" method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Post Title</label>
+            <input type="title" name="title" class="form-control" id="title">
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Post Content</label>
+            <textarea type="content" name="content" class="form-control" id="content"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+{% endblock %}

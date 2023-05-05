@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>Posts list</h3>
+
+    {% for post in posts %}
+        <div class="card mb-4 box-shadow" style="width:550px">
+            <div class="card-header">
+                <h5>{{ post.title }} by {{ User.query.get(post.user_id) }}</h1>
+            </div>
+
+            <div class="pl-3 card-body">
+                <p>{{ post.content }}</p>
+            </div>
+            
+            <div class="pl-3 card-body">
+                <form action="/post/{{ post.id }}/edit" method="GET">
+                    <button class='btn btn-secondary' type='submit'>Edit Post</button>
+                </form>
+                <br>
+                <form action="/post/{{ post.id }}/delete" method="GET">
+                    <button class='btn btn-danger' type='submit'>Delete Post</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+
+    <br>
+    <form action="/create-post" method="get">
+        <button type='submit'>Create Post</button>
+    </form>
+{% endblock %}
