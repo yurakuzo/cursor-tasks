@@ -21,7 +21,9 @@ storage.init_app(app)
 
 # Add all catday routes
 app.register_blueprint(catday.cats_bp, url_prefix='/cats')
+
 # a hack to make app logger accessible
+catday.cats_bp.storage = storage
 catday.cats_bp.logger = app.logger
 
 

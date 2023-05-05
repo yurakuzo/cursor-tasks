@@ -160,3 +160,8 @@ class Storage:
         """Ensure file always resides under directory"""
         pth = self.dir.joinpath(pth.Path(filename).name)
         return str(pth)
+    
+    #########
+    
+    def get_all(self):
+        return self._Model.get_all()

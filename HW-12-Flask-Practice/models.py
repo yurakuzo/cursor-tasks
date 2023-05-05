@@ -67,6 +67,13 @@ class File(db.Model):
         if found is None:
             raise LookupError
         return found
+    
+    @classmethod
+    def get_all(cls):
+        """Get all file IDs from database"""
+        querry = cls.query.all()
+        id_querry = [instance.id for instance in querry]
+        return id_querry
 
 
 
