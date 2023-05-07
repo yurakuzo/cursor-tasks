@@ -15,17 +15,9 @@ class ImagesDir:
         self.DIR = DIR
         self._PROJDIR = pth.Path(__file__).parent
         self.DIR_PATH = self._PROJDIR.joinpath(DIR[2:])
-        
-        def _get_imgs(self, dir=self.DIR):
-            # Ensure all directories reside under project directory
-            # and are resolved relative to it
-            dir = self._PROJDIR.joinpath(pth.Path(dir))
-            assert dir.is_relative_to(self._PROJDIR)
-            imgs = tuple(dir.iterdir())
-            return imgs
 
      # collect all images under supplied directory
-        self.IMAGES = _get_imgs(self)
+        self.IMAGES = self._get_imgs(self.DIR)
         
         # The logger we use
         log = logging.getLogger(__name__)
@@ -37,6 +29,16 @@ class ImagesDir:
             log.info('Collected %s images:\n\t%s',
                     len(IMAGES), '\n\t'.join(IMAGES))   
 
+    def _get_imgs(self, dir=None):
+            dir = dir or self.DIR
+            # Ensure all directories reside under project directory
+            # and are resolved relative to it
+            dir = self._PROJDIR.joinpath(pth.Path(dir))
+            assert dir.is_relative_to(self._PROJDIR)
+            imgs = tuple(dir.iterdir())
+            return imgs
+    
+    
     def find_img_file(self, numext, try_random=False):
         p = pth.Path(numext)
         base, ext = (p.stem, p.suffix) if p.suffix else ('', numext)
@@ -63,13 +65,6 @@ class ImagesDir:
 class UploadedDir(ImagesDir):
     def __init__(self, DIR='./uploaded', *args, **kwargs):
         super().__init__(DIR=DIR, *args, **kwargs)
-        def _get_imgs(self, dir=self.DIR):
-            # Ensure all directories reside under project directory
-            # and are resolved relative to it
-            dir = self._PROJDIR.joinpath(pth.Path(dir))
-            assert dir.is_relative_to(self._PROJDIR)
-            imgs = tuple(dir.iterdir())
-            return imgs
 
         
 catday = ImagesDir()
