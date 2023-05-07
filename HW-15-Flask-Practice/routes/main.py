@@ -13,11 +13,7 @@ def hello_world():
 @app.route("/search", methods=["POST"])
 def search():
     word = request.form.get('search')
-    print("FILTER WORD =", word)
-    if word:
-        articles = Article.filter_search(word)
-    else:
-        articles = Article.query.all()
+    articles = Article.filter_search(word)
     return render_template("index.html", articles=articles)
 
 
