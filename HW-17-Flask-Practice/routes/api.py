@@ -1,5 +1,5 @@
 from app import api, db
-from models import Article, MenuItem, Category
+from models import Article, MenuItem, Category, get_or_404
 from flask import request, Response
 from flask_restful import Resource
 
@@ -22,12 +22,12 @@ class ArticleResource(Resource):
 
 class ArticleSingleResource(Resource):
     def get(self, id):
-        article = Article.query.get(id)
+        article = get_or_404(Article, id)
         return article.serialize
 
     def put(self, id):
         data = request.json
-        article = Article.query.get(id)
+        article = get_or_404(Article, id)
         article.title = data.get("title")
         article.body = data.get("body")
         db.session.add(article)
@@ -35,7 +35,7 @@ class ArticleSingleResource(Resource):
         return article.serialize
 
     def delete(self, id):
-        article = Article.query.get(id)
+        article = get_or_404(Article, id)
         db.session.delete(article)
         db.session.commit()
         return Response("", status=204)
