@@ -6,8 +6,7 @@ from models import User, Article
 
 @app.route("/")
 def hello_world():
-    articles = Article.query.all()
-    return render_template("index.html", articles=articles)
+    return render_template("index.html")
 
 
 @app.route("/sign-up")
