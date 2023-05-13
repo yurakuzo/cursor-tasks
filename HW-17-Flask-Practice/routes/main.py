@@ -1,4 +1,5 @@
 import hashlib
+import json
 from app import app, db
 from flask import render_template, request, redirect, session
 from models import User, Article
@@ -56,4 +57,9 @@ def logout():
 # та я не хочу засмічувати коміт заради однієї функції)
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('errors/404.html'), 404
+    data = {
+        "code": error.code,
+        "name": error.name,
+        "description": error.description,
+    }
+    return render_template('errors/404.html', **data), 404

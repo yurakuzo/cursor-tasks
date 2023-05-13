@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h3>Error 404 | No such object</h3>
+    <h3>Error {{ code }} | {{ name }}</h3>
     <p>You are trying to do something with unexistant object</p>
+    <p>{{ description }}</p>
 {% endblock %}
