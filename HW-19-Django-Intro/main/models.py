@@ -14,6 +14,5 @@ class SliderItem(models.Model):
     link = models.CharField(max_length=255)
     image = models.ImageField(upload_to="uploads/")
 
-
     def __str__(self):
         return self.title

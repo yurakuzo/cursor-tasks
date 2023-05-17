@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
+from cursor import config as cfg
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-7b*n#aj$c@%csc_$6rq&byrf#=)c#j66mrv@)-l3i5uqubq=7w"
+SECRET_KEY = cfg.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = cfg.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = cfg.ALLOWED_HOSTS
 
 
 # Application definition
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "main"
+
+    "main",
 ]
 
 MIDDLEWARE = [
@@ -78,11 +79,11 @@ WSGI_APPLICATION = "cursor.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USERNAME"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),   # Or an IP Address that your DB is hosted on
-        'PORT': os.environ.get("DB_PORT"),
+        'NAME': cfg.DB_NAME,
+        'USER': cfg.DB_USERNAME,
+        'PASSWORD': cfg.DB_PASSWORD,
+        'HOST': cfg.DB_HOST,   # Or an IP Address that your DB is hosted on
+        'PORT': cfg.DB_PORT,
     }
 }
 
