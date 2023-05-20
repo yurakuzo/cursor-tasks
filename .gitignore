@@ -131,3 +131,6 @@ dmypy.json
 .env
 .idea
 ./idea
+
+.DS_Store
+/docker/.DS_Store

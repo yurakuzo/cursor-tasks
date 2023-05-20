@@ -6,3 +6,12 @@
 .products-list > .card {
     margin-right: 15px;
 }
+
+.images-list {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.images-list > .card {
+    margin-right: 15px;
+}

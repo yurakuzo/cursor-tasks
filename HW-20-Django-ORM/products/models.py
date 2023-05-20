@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Q
 
 
-
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -15,8 +14,12 @@ class Product(models.Model):
     def main_image(self):
         return ProductImage.objects.filter(Q(product_id=self.id) & Q(is_main=True)).first().image
 
+    @property
+    def images(self):
+        return ProductImage.objects.filter(Q(product_id=self.id))
+
     def __str__(self):
-        return str(self.id) + " " + self.title
+        return f"Product<{self.id}, {self.title}>"
 
 
 class ProductImage(models.Model):
@@ -28,7 +31,7 @@ class ProductImage(models.Model):
         unique_together = ('product', 'is_main')
 
     def __str__(self):
-        return str(self.product.id) + " " + self.product.title + "|" + str(self.id)
+        return f"Product<{self.product.id}, {self.product.title}> Image<{self.id}>"
 
 
 class Category(models.Model):
@@ -37,5 +40,9 @@ class Category(models.Model):
     parent = models.ForeignKey("Category", null=True, blank=True, on_delete=models.PROTECT)
     products = models.ManyToManyField(Product)
 
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
     def __str__(self):
-        return self.title
+        return f"Category <{self.title}>"
