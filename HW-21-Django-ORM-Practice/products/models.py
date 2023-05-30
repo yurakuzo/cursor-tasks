@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Q
 
 
-
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -10,6 +9,7 @@ class Product(models.Model):
     discount_price = models.IntegerField(null=True, blank=True)
     show_on_main_page = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateField(auto_now_add=True)
 
     @property
     def main_image(self):
