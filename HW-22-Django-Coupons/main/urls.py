@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import main, add_to_cart, cart, checkout, checkout_proceed, register, sign_in, sign_out
+from .views import main, add_to_cart, cart, checkout, checkout_proceed, register, sign_in, sign_out, apply_coupon, delete_item
 
 urlpatterns = [
-    path("", main),
+    path("", main, name='home'),
     path("sign-up", register, name="sign-up"),
     path("sign-in", sign_in, name="sign-in"),
     path("sign-out", sign_out, name="sign-out"),
@@ -10,4 +10,6 @@ urlpatterns = [
     path("cart", cart, name="cart"),
     path("checkout", checkout, name="checkout"),
     path("checkout/procceed", checkout_proceed, name="checkout_proceed"),
+    path("apply-coupon", apply_coupon, name="apply_coupon"),
+    path("delete-item/<int:pk>", delete_item, name="delete_item"),
 ]

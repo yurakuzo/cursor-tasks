@@ -1,10 +1,13 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Order, OrderItems
-from .forms import NewUserForm
+
+from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError
+
 from products.models import Product
+from .models import Order, OrderItems, Coupon
+from .forms import NewUserForm
 
 
 def main(request):
@@ -30,14 +33,37 @@ def add_to_cart(request, product_id: int):
     return HttpResponseRedirect("/")
 
 
-def cart(request):
+def delete_item(request, pk):
+    cart = request.session.get("cart", [])
+    index = next(index for (index, item) in enumerate(cart) if item['id'] == pk)
+    del cart[index]
+    request.session["cart"] = cart
+    return redirect("cart")
+
+
+def cart(request, coupon_msg=''):
     cart_products = []
+    discounts = []
     for cart_item in request.session.get("cart", []):
         product = Product.objects.get(id=cart_item["id"])
         product.quantity = cart_item["quantity"]
         product.total_price = cart_item["price"]
         cart_products.append(product)
-    return render(request, "cart.html", {"cart_products": cart_products})
+        
+    if (code := request.session.get("coupon_code", False)):
+        code = Coupon.objects.get(code=code)
+        discounts = [code.use_coupon_on(product)
+                     for product in cart_products]
+        print("discounts =", discounts)
+    
+    context = {
+        "cart_products": cart_products,
+        "coupon_msg": coupon_msg,
+        "discounts": sum(discounts),
+        "total_price": sum([obj.total_price for obj in cart_products]),
+        "coupon": request.session.get("coupon_code", False)
+    }
+    return render(request, "cart.html", context=context)
 
 
 def checkout(request):
@@ -97,3 +123,20 @@ def sign_in(request):
 def sign_out(request):
     logout(request)
     return HttpResponseRedirect("/")
+
+
+def apply_coupon(request):
+    if request.method == "POST":
+        input_code = request.POST.get("input_code")
+        try:
+            coupon = Coupon.verify_code(input_code)
+            request.session["coupon_code"] = coupon.code
+            messages.success(request, "Coupon applied successfully.")
+            return cart(request, coupon_msg="Coupon applied successfully.")
+        
+        except ValidationError:
+            request.session["coupon_code"] = None
+            messages.error(request, 'Invalid coupon code')
+            return cart(request, coupon_msg='Invalid coupon code')
+
+# TODO: додати сумарну ціну та з знижкою

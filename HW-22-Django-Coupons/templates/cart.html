@@ -19,11 +19,27 @@
 
         <div class="card mb-4">
           <div class="card-body p-4 d-flex flex-row">
-            <div class="form-outline flex-fill">
-              <input type="text" id="form1" class="form-control form-control-lg" />
-              <label class="form-label" for="form1">Discound code</label>
-            </div>
-            <button type="button" class="btn btn-outline-warning btn-lg ms-3">Apply</button>
+            
+            <form action="{% url 'apply_coupon' %}" method="POST">
+              {% csrf_token %}
+                <div class="form-outline flex-fill">
+                  <input type="text" id="form1" name="input_code" class="form-control form-control-lg"/>
+                  <label class="form-label" for="form1">Discound code</label>
+
+                  {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                          <div class="alert alert-warning" role="alert">
+                            <p {% if message.tags %} class="{{ message.tags }}" {% endif %}> {{ message }} </p>
+                          </div>
+                        {% endfor %}
+                    </ul>
+                  {% endif %}
+
+                </div>
+                <button type="submit" class="btn btn-outline-warning btn-lg ms-3">Apply</button>
+            </form>
+            
           </div>
         </div>
 
@@ -31,6 +47,7 @@
           <div class="card-body">
             <a href="{% url 'checkout' %}" class="btn btn-warning btn-block btn-lg" >Proceed to Pay</a>
           </div>
+          Total price: {{ total_price }} {% if coupon %} => {{ discounts }} {% endif %}
         </div>
 
       </div>
