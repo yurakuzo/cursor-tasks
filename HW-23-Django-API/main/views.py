@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from .models import Order, OrderItems
 from .forms import NewUserForm
@@ -64,6 +65,7 @@ def checkout_proceed(request):
             total = total + item["price"]
         order.total_price = total
         order.save()
+        
         for item in request.session.get("cart", []):
             order_item = OrderItems()
             order_item.product_id = item["id"]
@@ -79,10 +81,13 @@ def register(request):
         form = NewUserForm(request.POST)
         if form.is_valid():
             user = form.save()
+            group, created = Group.objects.get_or_create(name='Customer')
+            user.groups.add(group)
             login(request, user)
             return HttpResponseRedirect("/")
     form = NewUserForm()
     return render(request, "sign-up.html", {"form": form})
+
 
 
 def sign_in(request):

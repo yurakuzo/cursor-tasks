@@ -7,6 +7,7 @@ from .views import ProductView, ProductSingleView, CategoryProductsView
 router = DefaultRouter()
 router.register(r'v1/products', ProductViewSet, basename="api_products")
 router.register(r'v1/categories', CategoryViewSet, basename="api_categories")
+router.register(r'orders', OrderViewSet, basename="api_orders")
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
