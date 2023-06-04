@@ -1,0 +1,73 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import ProductSerializer
+from products.models import Product, Category
+from .permissions import AdminPermission, CustomerPermission, SellerPermission
+
+
+class ProductView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        products = Product.objects.all()
+        serialized_products = ProductSerializer(products, many=True)
+        return Response(serialized_products.data)
+
+
+
+class ProductSingleView(APIView):
+    permission_classes = [IsAuthenticated, AdminPermission]
+
+    def get_object(self, id):
+        try:
+            product = Product.objects.get(id=id)
+            return product
+        except Product.DoesNotExist:
+            return None
+
+
+    def get(self, request, id):
+        product = self.get_object(id)
+        serialized_product = ProductSerializer(product)
+        return Response(serialized_product.data)
+
+
+    def put(self, request, id):
+        product = self.get_object(id)
+        if product is not None:
+            serialized_product = ProductSerializer(instance=product, data=request.data)
+            if serialized_product.is_valid():
+                serialized_product.save()
+                return Response(serialized_product.data)
+        return Response(None, status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, id):
+        product = self.get_object(id)
+        if product is not None:
+            product.delete()
+            return Response(None, status.HTTP_204_NO_CONTENT)
+        return Response(None, status.HTTP_400_BAD_REQUEST)
+
+
+
+class CategoryProductsView(APIView):
+    permission_classes = [IsAuthenticated, CustomerPermission, SellerPermission]
+    
+    def get_object(self, id):
+        try:
+            category = Category.objects.get(id=id)
+            return category
+        except Category.DoesNotExist:
+            return None
+
+    def get(self, request, category_id):
+        category = self.get_object(category_id)
+        if category is not None:
+            if category.products:
+                products = ProductSerializer(category.products, many=True)
+                return Response(products.data)
+        return Response(None, status.HTTP_404_NOT_FOUND)
