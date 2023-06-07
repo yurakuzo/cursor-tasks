@@ -1,8 +1,12 @@
+import asyncio
+
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
-from django.contrib import messages
+
+from .telegram_bot import send_telegram_notification
 from .models import Order, OrderItems
 from .forms import NewUserForm
 from products.models import Product
@@ -48,7 +52,6 @@ def checkout(request):
 
     return render(request, "checkout.html", {"total_price": total_price})
 
-
 def checkout_proceed(request):
     if request.method == "POST":
         order = Order()
@@ -73,6 +76,18 @@ def checkout_proceed(request):
             order_item.price = item["price"]
             order_item.quantity = item["quantity"]
             order_item.save()
+            
+        order_items_message = ""
+        for item in request.session.get("cart", []):
+            product = Product.objects.get(id=item["id"])
+            product_name = product.title
+            product_quantity = item["quantity"]
+            product_price = item["price"]
+            item_message = f"\n- {product_name}: Quantity: {product_quantity}, Price: {product_price}"
+            order_items_message += item_message
+        
+        order_message = f"User {order.first_name} {order.last_name}, have successfully placed a new order with ID: {order.id}.\nOrder items:{order_items_message}"
+        asyncio.run(send_telegram_notification(order_message))
     return HttpResponseRedirect("/")
 
 

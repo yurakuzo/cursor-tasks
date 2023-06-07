@@ -30,6 +30,17 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = ["http://localhost:1443", "http://0.0.0.0:1443"]
 
 
+TELEGRAM_BOT_TOKEN = '5996744927:AAHAA4KUdnLYUkox2XY_rBX-ZWnsYOKAwSs'
+# TELEGRAM_CHAT_ID = '@cursor_notification'
+
+# CELERY_BROKER_URL = "redis://redis:6379/0"
+# CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+# CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+# CELERY_ACCEPT_CONTENT = ["application/json"]
+# CELERY_TASK_SERIALIZER = "json"
+# CELERY_RESULT_SERIALIZER = "json"
+
+
 
 # Application definition
 
