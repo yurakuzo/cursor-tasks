@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>{{ product.title }}</h2>
+        <p>{{ product.description }}</p>
+
+        <div class="images-list">
+            Product Images:
+            {% for img in product_images %}
+                <div class="card" style="width: 18rem;">
+                    <img src="/media/{{ img.image }}" class="card-img-top" alt="...">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
