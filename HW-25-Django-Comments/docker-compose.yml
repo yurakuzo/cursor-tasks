@@ -2,38 +2,6 @@ version: "3"
 
 
 services:
-  db:
-    image: mysql:latest
-    ports:
-      - 3308:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cursor_db
-    volumes:
-      - ./docker/db:/var/lib/mysql
-    networks:
-      - app
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 5s
-      retries: 10
-
-  app:
-    build:
-      context: .
-      dockerfile: ./docker/python/Dockerfile
-    ports:
-      - 8080:5000
-    environment:
-      PYTHONBUFFERED: 1
-    volumes:
-      - .:/app
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app
-
   nginx:
     image: nginx:1.23-alpine
     volumes:
@@ -44,6 +12,33 @@ services:
     networks:
       - app
     depends_on:
+      - app
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    ports:
+      - 8080:5000
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    networks:
+      - app
+
+  db:
+    image: mysql:latest
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cursor_db
+    volumes:
+      - ./docker/db:/var/lib/mysql
+    networks:
       - app
 
 

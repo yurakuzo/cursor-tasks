@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container mb-3">
+        <h1 class="text-center">{{ product.title }}</h1>
+        <div class="product-info">
+            <div class="carousel text-center">
+                {% for image in images %}
+                    <div class="image">
+                        <img src="/media/{{ image.image }}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="comments mt-3">
+            <h2 class="text-center">Comments</h2>
+            <div class="comments-list">
+                {% for comment in comments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ comment.user.first_name }} {{ comment.user.last_name }}</h5>
+                            <p class="card-text">{{ comment.text }}</p>
+                            <a href="#" class="btn btn-primary answer" data-id="{{ comment.id }}">Reply</a>
+                        </div>
+                        <div class="card-footer">
+                            {% for child in comment.child_comments %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ child.user.first_name }} {{ child.user.last_name }}</h5>
+                                        <p class="card-text">{{ child.text }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="add-comment mt-3">
+                <h2 class="text-center">Add a Comment</h2>
+                <form action="{% url 'add_comment' product_id=product.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea class="form-control" name="comment-text" id="comment-text" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block additional_js %}
+    <script>
+        $('.carousel').slick({
+            slidesToShow: 1,
+            infinite: true,
+        });
+    </script>
+    <script>
+        const answers = document.getElementsByClassName("answer");
+        for (let el of answers) {
+            el.addEventListener("click", function (event) {
+                event.preventDefault();
+                let input = document.getElementById("parentComment")
+                input.setAttribute("value", this.getAttribute("data-id"))
+            });
+        }
+    </script>
+{% endblock %}
