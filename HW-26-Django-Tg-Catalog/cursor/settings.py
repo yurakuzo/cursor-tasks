@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-7b*n#aj$c@%csc_$6rq&byrf#=)c#j66mrv@)-l3i5uqubq=7w
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:1443", "http://0.0.0.0:1443"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1443", "http://0.0.0.0:1443", "https://448a-176-227-245-52.ngrok-free.app"]
 
 
 TELEGRAM_BOT_TOKEN = '5996744927:AAHAA4KUdnLYUkox2XY_rBX-ZWnsYOKAwSs'
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+
     "rest_framework",
     
     "main",
@@ -60,12 +61,13 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        'api.permissions.AdminPermission',  
-        'api.permissions.CustomerPermission',
-        'api.permissions.SellerPermission', 
-    ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    #     'rest_framework.permissions.AllowAny',
+    #     'api.permissions.AdminPermission',
+    #     'api.permissions.CustomerPermission',
+    #     'api.permissions.SellerPermission',
+    # ],
 }
 
 
